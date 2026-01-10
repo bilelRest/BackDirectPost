@@ -36,7 +36,7 @@ pipeline {
                     sh "docker build -t myship-app ."
 
                     // Démarrer un nouveau conteneur
-                    sh "docker run -d --name myship-app --network host myship-app"
+                    sh "docker run -d --name myship-app -p 6161:6161 myship-app"
                 }
             }
         }

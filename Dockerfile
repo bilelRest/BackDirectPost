@@ -9,4 +9,5 @@ COPY src/main/resources/application.properties /app/src/main/resources/applicati
 
 EXPOSE 6161
 
+
 CMD ["java", "-jar", "myship-0.0.1-SNAPSHOT.jar"]
