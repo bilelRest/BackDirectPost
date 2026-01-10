@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/new","/auth/login").permitAll() // Endpoint pour login/register
+                        .requestMatchers("/api/auth/**","/auth/**").permitAll() // Endpoint pour login/register
                         .anyRequest().authenticated()
                 );
 
