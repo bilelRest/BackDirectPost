@@ -1,0 +1,117 @@
+package tn.poste.myship.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+import java.time.LocalDate;
+
+@Entity
+public class Sender {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long sendId;
+    private String sendName;
+    private String sendSocialReason;
+    private Long sendTel;
+    private String adress;
+    private Long postalCode;
+    private String city;
+    private String country;
+    private String sendEmail;
+    private LocalDate createdAt=LocalDate.now();
+    public Sender(String sendName, String sendSocialReason, Long sendTel, String adress, Long postalCode, String city, String country, String sendEmail) {
+        this.sendName = sendName;
+        this.sendSocialReason = sendSocialReason;
+        this.sendTel = sendTel;
+        this.adress = adress;
+        this.postalCode = postalCode;
+        this.city = city;
+        this.country = country;
+        this.sendEmail = sendEmail;
+    }
+
+    public Sender() {
+    }
+
+    public String getSendName() {
+        return sendName;
+    }
+
+    public void setSendName(String sendName) {
+        this.sendName = sendName;
+    }
+
+    public String getSendSocialReason() {
+        return sendSocialReason;
+    }
+
+    public void setSendSocialReason(String sendSocialReason) {
+        this.sendSocialReason = sendSocialReason;
+    }
+
+    public Long getSendId() {
+        return sendId;
+    }
+
+    public void setSendId(Long sendId) {
+        this.sendId = sendId;
+    }
+
+    public Long getSendTel() {
+        return sendTel;
+    }
+
+    public void setSendTel(Long sendTel) {
+        this.sendTel = sendTel;
+    }
+
+    public String getAdress() {
+        return adress;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
+    }
+
+    public Long getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(Long postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getSendEmail() {
+        return sendEmail;
+    }
+
+    public void setSendEmail(String sendEmail) {
+        this.sendEmail = sendEmail;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+}
