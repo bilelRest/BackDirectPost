@@ -10,7 +10,7 @@ import tn.poste.myship.entity.Operation;
 import tn.poste.myship.service.PassengerService;
 
 @RestController
-@RequestMapping("/operation/passenger")
+@RequestMapping("/api/operation/passenger")
 public class PassengerRestController {
     @Autowired
     PassengerService passengerService;
