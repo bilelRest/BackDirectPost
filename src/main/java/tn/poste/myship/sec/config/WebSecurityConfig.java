@@ -26,6 +26,7 @@ public class WebSecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -33,7 +34,9 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/api/auth/**", "**/auth/**").permitAll() // Endpoint pour login/register
+                        // Utilisez des patterns précis sans ** au milieu ou à la fin si non nécessaire
+                        .requestMatchers("/auth/login", "/auth/new").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/new").permitAll()
                         .anyRequest().authenticated()
                 );
 
