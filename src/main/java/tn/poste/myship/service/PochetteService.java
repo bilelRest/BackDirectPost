@@ -14,10 +14,10 @@ public class PochetteService {
        return pochetteRepo.findByTypePochette(type);
     }
     //Ajouter  une pochette
-    public void addPochete(Pochette pochette){
-        pochetteRepo.save(pochette);
+    public Pochette addPochete(Pochette pochette){
+        return  pochetteRepo.save(pochette);
 
-    }
+             }
     //Mettre a jours
 
 }

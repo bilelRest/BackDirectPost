@@ -1,46 +1,85 @@
 package tn.poste.myship.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
 public class Operation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long opId;
+    @OneToMany(mappedBy = "operation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("operation")
+    private List<Parcel> parcel = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL) // Garde votre structure simple
-    private List<Parcel> parcel;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Pochette> pochette;
+    @JsonIgnoreProperties("operation")
+    @OneToMany(mappedBy = "operation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pochette> pochette = new ArrayList<>();
 
     private String formattedId;
     private Boolean validated = false;
     private Boolean cancelled = false;
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDate createdAt;
 
-    // --- LA CORRECTION EST ICI ---
-    @PostPersist // S'exécute juste après le save() en base (quand l'ID existe)
-    @PostLoad    // S'exécute quand on récupère l'objet de la base
-    public void generateFormattedId() {
-        if (this.opId != null) {
+    /**
+     * S'exécute AVANT l'insertion en base de données.
+     * On initialise la date ici pour garantir qu'elle n'est pas nulle lors du calcul de l'ID formaté.
+     */
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDate.now();
+        }
+    }
+
+    /**
+     * S'exécute APRES l'insertion. L'ID (opId) est maintenant disponible.
+     */
+    @PostPersist
+    public void generateFormattedIdAfterPersist() {
+        updateFormattedIdLogic();
+    }
+
+    /**
+     * S'exécute lors du chargement depuis la base.
+     */
+    @PostLoad
+    public void onPostLoad() {
+        updateFormattedIdLogic();
+    }
+
+    /**
+     * Logique centrale de formatage pour éviter la duplication de code et les NPE.
+     */
+    private void updateFormattedIdLogic() {
+        if (this.opId != null && this.createdAt != null) {
             int yearTwoDigits = this.createdAt.getYear() % 100;
             String month = String.format("%02d", this.createdAt.getMonthValue());
-            // On remplit le champ formattedId avec l'ID enfin généré
+            // Format: OP-0000000001MMYY
             this.formattedId = String.format("OP-%010d%s%02d", this.opId, month, yearTwoDigits);
         }
     }
 
-    public Operation() {}
+    // --- CONSTRUCTEURS ---
+    public Operation() {
+        // Initialisation par défaut pour éviter les listes nulles
+        this.parcel = new ArrayList<>();
+        this.pochette = new ArrayList<>();
+    }
 
     public Operation(List<Parcel> parcel, List<Pochette> pochette) {
         this.parcel = parcel;
         this.pochette = pochette;
+        this.createdAt = LocalDate.now();
     }
 
-    // Getters et Setters standards
+    // --- GETTERS ET SETTERS ---
     public Long getOpId() { return opId; }
     public void setOpId(Long opId) { this.opId = opId; }
 

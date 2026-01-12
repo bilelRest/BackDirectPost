@@ -1,12 +1,8 @@
 package tn.poste.myship.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import tn.poste.myship.sec.entity.AppUser;
 
 import java.time.LocalDate;
@@ -24,20 +20,22 @@ public class Parcel {
     private Double weight;
     private Boolean deleted = false;
     @ManyToOne
-    @JoinColumn(name = "op_id")    
+    @JoinColumn(name = "op_id")
+    @JsonIgnoreProperties({"parcel", "pochette"})
     private Operation operation;
     @OneToOne
     private AppUser appUser;
    // PLUSIEURS colis peuvent aller vers UN SEUL destinataire
-    @ManyToOne
-    private Receiver receiver;
+   @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+   private Receiver receiver;
 
     // PLUSIEURS colis peuvent être envoyés par UN SEUL expéditeur
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Sender sender;
 
     // UN colis a UN SEUL numéro de suivi (Ici OneToOne est correct)
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
     private TrackingNumber trackingNumber;
 
     public Long getParcelId() {

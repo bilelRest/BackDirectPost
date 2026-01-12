@@ -9,9 +9,9 @@ import tn.poste.myship.repo.TrackingNumberRepo;
 public class TrackingService {
     @Autowired
     TrackingNumberRepo trackingNumberRepo;
-    public String generateTrackingNumber(){
+    public TrackingNumber generateTrackingNumber(){
         TrackingNumber trackingNumber=new TrackingNumber();
         trackingNumberRepo.save(trackingNumber);
-        return trackingNumber.getFormattedParcelId();
+        return trackingNumber;
     }
 }

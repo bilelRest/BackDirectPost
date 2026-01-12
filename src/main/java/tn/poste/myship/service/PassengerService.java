@@ -21,6 +21,12 @@ TrackingService trackingService;
 ParcelService parcelService;
 @Autowired
 PochetteService pochetteService;
+@Autowired
+CheckClient checkClient;
+//Verification si operation deja existante pour eviter le declenchement des ops eu cours de rafraichissement
+    public Operation checkOps(Long id){
+        return operationRepo.findById(id).isPresent()?operationRepo.findById(id).get():null;
+    }
 //Creation d'une nouvelle operation
     public Operation NewOpeartion(){
         Operation operation=new Operation();
@@ -60,28 +66,38 @@ PochetteService pochetteService;
 
     }
     //ajouter un colis a l'opeartion en cours
-    public Boolean addParcel(String operationId, Parcel parcel){
-        Operation operation=operationRepo.findByFormattedId(operationId);
-        if (operation != null){
-            operation.getParcel().add(parcel);
-            operationRepo.save(operation);
-            return true;
-        }else return false;
+    public Parcel addParcel(String operationId, Parcel parcel) {
+        Operation operation = operationRepo.findByFormattedId(operationId);
+        if (operation == null) throw new RuntimeException("Opération introuvable");
 
+        parcel.setOperationId(operation);
+        parcel.setSender(checkClient.checkSender(parcel.getSender()));
+        parcel.setReceiver(checkClient.checkReceiver(parcel.getReceiver()));
+
+        // On récupère l'instance gérée (managed) après le save
+        Parcel savedParcel = parcelService.createOrUpdateParcel(parcel);
+
+        // Mise à jour de la liste côté opération
+        operation.getParcel().add(savedParcel);
+        operationRepo.save(operation);
+
+        return savedParcel; // On retourne l'objet qui contient toutes les relations
     }
     //ajouter une pochette à l'operation en cours
-    public Boolean addPochete(String operationId, Pochette pochette){
+    public Pochette addPochete(String operationId, Pochette pochette){
         Operation operation=operationRepo.findByFormattedId(operationId);
-        if(operation != null){
-            operation.getPochette().add(pochette);
-            return true;
-        }else return false;
+        if(operation == null)throw new RuntimeException("Operation ontrouvable");
+        pochette.setOperation(operation);
+        pochette.setSender(checkClient.checkSender(pochette.getSender()));
+        Pochette savedPochette=pochetteService.addPochete(pochette);
+        operation.getPochette().add(savedPochette);
+        return savedPochette;
     }
     //consulter les details de operation
     public Operation getOperationContent(String formattedId) {
         Operation operation = operationRepo.findByFormattedId(formattedId);
 
-        // On filtre les listes pour ne renvoyer que ce qui n'est pas "deleted"
+        // 1. On filtre les listes (ton code actuel)
         List<Parcel> activeParcels = operation.getParcel().stream()
                 .filter(p -> !p.getDeleted())
                 .collect(Collectors.toList());
@@ -90,7 +106,12 @@ PochetteService pochetteService;
                 .filter(p -> !p.getDeleted())
                 .collect(Collectors.toList());
 
-        // On remplace les listes uniquement dans l'objet de réponse
+        // 2. LA SOLUTION : On coupe le lien retour vers l'opération
+        // Cela empêche Jackson de boucler, mais ne change rien en base de données
+        activeParcels.forEach(p -> p.setOperationId(null));
+        activePochettes.forEach(p -> p.setOperation(null));
+
+        // 3. On affecte les listes "nettoyées" à l'objet de réponse
         operation.setParcel(activeParcels);
         operation.setPochette(activePochettes);
 

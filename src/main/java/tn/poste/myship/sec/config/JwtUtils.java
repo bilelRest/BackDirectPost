@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtils {
     private String secretKey = "votre_cle_tres_secrete_et_tres_longue_pour_la_securite";
-    private long jwtExpiration = 300000; // 24h
+    private long jwtExpiration = 3000000; // 24h
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()

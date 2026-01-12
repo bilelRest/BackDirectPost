@@ -1,22 +1,72 @@
 package tn.poste.myship.restController;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import tn.poste.myship.controller.OperationController;
-import tn.poste.myship.entity.Operation;
+import tn.poste.myship.dto.DtoParcel;
+import tn.poste.myship.entity.*;
 import tn.poste.myship.service.PassengerService;
+import tn.poste.myship.service.SenderReceiverService;
+import tn.poste.myship.service.TrackingService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/operation/passenger")
 public class PassengerRestController {
     @Autowired
     PassengerService passengerService;
+    @Autowired
+    SenderReceiverService senderReceiverService;
+    @Autowired
+    TrackingService trackingService;
+
+//    @GetMapping("/parcels")
+//    public Operation getParcelByOpId(@RequestParam (value = "op") String op){
+//        System.out.println("Formatted Id recu au controleur "+op);
+//        return passengerService.getOperationContent(op);
+    //}
+    @GetMapping("/parcels")
+    public ResponseEntity<?> getParcelByOpId(@RequestParam(value = "op") String op) {
+        Operation operation = passengerService.getOperationContent(op);
+        // On ne renvoie qu'un String pour tester si le service plante ou si c'est le JSON
+        return ResponseEntity.ok("ID trouvé : " + operation.getFormattedId());
+    }
+    @PostMapping("/addparcel")
+    public Operation addParcel(@RequestBody Parcel parcel,@RequestParam(value = "op")String op){
+
+        parcel.setTrackingNumber(trackingService.generateTrackingNumber());
+
+         passengerService.addParcel(op, parcel);
+         return passengerService.getOperationContent(op);
+
+
+
+    }
+    @PostMapping("/addpochette")
+    public Operation addParcel(@RequestBody Pochette pochette, @RequestParam(value = "op")String op){
+
+
+
+        passengerService.addPochete(op,pochette);
+        return passengerService.getOperationContent(op);
+
+
+
+    }
     @GetMapping("/new")
     public Operation newOperation(){
         return passengerService.NewOpeartion();
+    }
+    @GetMapping("/senders")
+    public List<Sender> findAllSenders(){
+        return senderReceiverService.getSenderList();
+    }
+    @GetMapping("/receivers")
+    public List<Receiver> findAllReceivers(){
+        return senderReceiverService.getReceiverList();
     }
 
 }
