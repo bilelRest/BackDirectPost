@@ -102,7 +102,7 @@ CheckClient checkClient;
 
         pochette.setSender(checkClient.checkSender(pochette.getSender()));
         Pochette savedPochette=pochetteService.addPochete(operationId,pochette);
-        operation.getPochette().add(savedPochette);
+        //operation.getPochette().add(savedPochette);
         return savedPochette;
     }
     //consulter les details de operation
