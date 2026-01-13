@@ -65,15 +65,14 @@ CheckClient checkClient;
             }
             operation.setValidated(true);
 
-            Operation savedOp = operationRepo.save(operation);
 
             // --- LA SOLUTION ICI ---
             // On vide manuellement les listes avant de renvoyer l'objet JSON
             // Cela empêche Jackson de descendre dans les colis et de boucler.
-            savedOp.setParcel(new ArrayList<>());
-            savedOp.setPochette(new ArrayList<>());
+//        savedOp.setParcel(operation.getParcel());
+//         savedOp.setPochette(operation.getPochette());
 
-            return savedOp;
+            return operationRepo.save(operation);
         }
         return null;
     }
@@ -83,7 +82,7 @@ CheckClient checkClient;
         Operation operation = operationRepo.findByFormattedId(operationId);
         if (operation == null) throw new RuntimeException("Opération introuvable");
 
-        parcel.setOperationId(operation);
+
         parcel.setSender(checkClient.checkSender(parcel.getSender()));
         parcel.setReceiver(checkClient.checkReceiver(parcel.getReceiver()));
 
@@ -100,9 +99,9 @@ CheckClient checkClient;
     public Pochette addPochete(String operationId, Pochette pochette){
         Operation operation=operationRepo.findByFormattedId(operationId);
         if(operation == null)throw new RuntimeException("Operation ontrouvable");
-        pochette.setOperation(operation);
+
         pochette.setSender(checkClient.checkSender(pochette.getSender()));
-        Pochette savedPochette=pochetteService.addPochete(pochette);
+        Pochette savedPochette=pochetteService.addPochete(operationId,pochette);
         operation.getPochette().add(savedPochette);
         return savedPochette;
     }
@@ -121,8 +120,7 @@ CheckClient checkClient;
 
         // 2. LA SOLUTION : On coupe le lien retour vers l'opération
         // Cela empêche Jackson de boucler, mais ne change rien en base de données
-        activeParcels.forEach(p -> p.setOperationId(null));
-        activePochettes.forEach(p -> p.setOperation(null));
+
 
         // 3. On affecte les listes "nettoyées" à l'objet de réponse
         operation.setParcel(activeParcels);
@@ -141,7 +139,7 @@ parcelService.deleteByTrackingNumber(tracking);
        for (Pochette pochette :operation.getPochette()){
            if (pochette.getTypePochette().equals(typePochette)){
                pochette.setDeleted(true);
-               pochetteService.addPochete(pochette);
+               pochetteService.addPochete(opId,pochette);
            }
        }
 

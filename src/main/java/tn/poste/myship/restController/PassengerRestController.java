@@ -15,6 +15,8 @@ import tn.poste.myship.service.TrackingService;
 
 import java.util.List;
 
+import static org.springframework.web.servlet.function.ServerResponse.ok;
+
 @RestController
 @RequestMapping("/api/operation/passenger")
 public class PassengerRestController {
@@ -31,9 +33,10 @@ public class PassengerRestController {
 //        return passengerService.getOperationContent(op);
     //}
     @PostMapping("/payment")
-    public ResponseEntity<?> validerPayment(@RequestParam(value = "op")String op,@RequestBody Payment payment){
+    public Operation validerPayment(@RequestParam(value = "op")String op,@RequestBody Payment payment){
 
-        return ResponseEntity.ok( passengerService.setValidated(op,payment.banque, payment.cheque));
+        return passengerService.setValidated(op,payment.banque, payment.cheque);
+
     }
     @GetMapping("/parcels")
     public ResponseEntity<?> getParcelByOpId(@RequestParam(value = "op") String op) {

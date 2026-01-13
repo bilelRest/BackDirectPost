@@ -39,11 +39,11 @@ public interface ParcelRepo extends JpaRepository< Parcel,Long> {
     public List<Parcel> findBySendTelAndDeliveredFalse(Long tel);
 
 
-    @Query("SELECT p FROM Parcel p WHERE p.operation.opId = :op AND p.deleted = false")
+    @Query("SELECT p FROM Parcel p WHERE p.operationId = :op AND p.deleted = false")
     public List<Parcel> findByOperationIdAndDeliveredFalse(Long op);
 @Query("SELECT p FROM Parcel p WHERE p.trackingNumber.formattedParcelId = :track ")
     Parcel findByTrackingNumberString(String track);
-@Query("SELECT p FROM Parcel p WHERE p.operation.formattedId = :operation")
+@Query("SELECT p FROM Parcel p WHERE p.operationId = :operation")
     List<Parcel> findByOperationId(String operation);
 
 }

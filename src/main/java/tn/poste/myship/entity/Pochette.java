@@ -16,14 +16,17 @@ public class Pochette {
     private Double totalPrice;
     private Boolean deleted=false;
     private final LocalDate createdAt=LocalDate.now();
-    @ManyToOne
-    @JoinColumn(name = "op_id")
-    @JsonBackReference(value = "op-pochette") // <--- Doit correspondre à Operation
-    @JsonIgnoreProperties({"parcel", "pochette"})
-    private Operation operation;
+    @Column(name = "operation")
+    private String operationId; //
+
+    public Pochette() {
+    }
+
     @ManyToOne
     private Sender sender;
+
     @OneToOne
+    @JsonIgnoreProperties({"password", "roles"}) // ← Ignorer les infos sensibles
     private AppUser appUser;
     public Double getTotalPrice() {
         return totalPrice;
@@ -40,33 +43,25 @@ public class Pochette {
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
-    public Pochette(Operation operation, AppUser appUser) {
-        this.operation = operation;
-        this.appUser = appUser;
-    }
-    public Pochette(String typePochette, int quantite, Sender sender, Double totalPrice, Operation operation, AppUser appUser) {
+
+    public Pochette(String typePochette, int quantite, String operationId, Sender sender, Double totalPrice , AppUser appUser) {
         this.typePochette = typePochette;
         this.quantite = quantite;
+        this.operationId = operationId;
         this.sender = sender;
         this.totalPrice = totalPrice;
-        this.operation = operation;
-        this.appUser = appUser;
+      this.appUser = appUser;
     }
 
-    public Pochette() {
+    public Pochette(String operationId) {
+        this.operationId = operationId;
     }
 
     public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public Operation getOperation() {
-        return operation;
-    }
 
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-    }
 
     public Long getId() {
         return id;
@@ -107,6 +102,14 @@ public class Pochette {
 
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(String operationId) {
+        this.operationId = operationId;
     }
 }
 

@@ -14,7 +14,8 @@ public class PochetteService {
        return pochetteRepo.findByTypePochette(type);
     }
     //Ajouter  une pochette
-    public Pochette addPochete(Pochette pochette){
+    public Pochette addPochete(String op,Pochette pochette){
+        pochette.setOperationId(op);
         return  pochetteRepo.save(pochette);
 
              }

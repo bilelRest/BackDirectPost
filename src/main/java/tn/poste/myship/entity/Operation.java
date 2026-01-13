@@ -14,13 +14,14 @@ public class Operation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long opId;
-    @OneToMany(mappedBy = "operation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("operation")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "operation", referencedColumnName = "formattedId")
     private List<Parcel> parcel = new ArrayList<>();
 
-    @JsonIgnoreProperties("operation")
-    @OneToMany(mappedBy = "operation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "operation", referencedColumnName = "formattedId")
     private List<Pochette> pochette = new ArrayList<>();
+
 
     private String formattedId;
     private Boolean validated = false;

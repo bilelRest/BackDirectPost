@@ -19,21 +19,21 @@ public class Parcel {
     private Double price;
     private Double weight;
     private Boolean deleted = false;
-    @ManyToOne
-    @JoinColumn(name = "op_id")
-    @JsonIgnoreProperties({"parcel", "pochette"})
-    private Operation operation;
-    @OneToOne
-    private AppUser appUser;
-   // PLUSIEURS colis peuvent aller vers UN SEUL destinataire
-   @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-   private Receiver receiver;
 
-    // PLUSIEURS colis peuvent être envoyés par UN SEUL expéditeur
+    public Parcel() {
+    }
+
+    @OneToOne
+    @JsonIgnoreProperties({"password", "roles"}) // ← Ignorer les infos sensibles
+    private AppUser appUser;
+    @Column(name = "operation")
+    private String operationId; //
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Receiver receiver;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Sender sender;
-
-    // UN colis a UN SEUL numéro de suivi (Ici OneToOne est correct)
 
     @OneToOne(cascade = CascadeType.ALL)
     private TrackingNumber trackingNumber;
@@ -46,11 +46,9 @@ public class Parcel {
         this.parcelId = parcelId;
     }
 
-    public Parcel() {
-    }
 
-    public Parcel(Operation operation,AppUser appUser, Double width, Double height, Double lenght, Double price, Double weight, Receiver receiver, Sender sender, TrackingNumber trackingNumber, Boolean deleted) {
-        this.operation=operation; 
+
+    public Parcel(AppUser appUser, Double width, Double height, Double lenght, Double price, Double weight, Receiver receiver, Sender sender, TrackingNumber trackingNumber, Boolean deleted, String operationId) {
         this.deleted=deleted;
         this.width = width;
         this.height = height;
@@ -61,6 +59,7 @@ public class Parcel {
         this.sender = sender;
         this.trackingNumber = trackingNumber;
         this.appUser = appUser;
+        this.operationId = operationId;
     }
 
     public Double getWidth() {
@@ -143,13 +142,7 @@ public class Parcel {
         this.appUser = appUser;
     }
 
-    public Operation getOperationId() {
-        return operation;
-    }
 
-    public void setOperationId(Operation operation) {
-        this.operation = operation;
-    }
 
     public LocalDate getCreatedAt() {
         return createdAt;
@@ -157,5 +150,13 @@ public class Parcel {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(String operationId) {
+        this.operationId = operationId;
     }
 }
