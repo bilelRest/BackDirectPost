@@ -29,7 +29,7 @@ public class CheckClient {
             return senderRepo.save(existingSender);
         } else {
             // CRITIQUE : Sécurité pour éviter l'erreur Sender#0
-            sender.setId(null);
+            sender.setSendId(null);
             return senderRepo.save(sender);
         }
     }
