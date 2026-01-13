@@ -56,15 +56,28 @@ CheckClient checkClient;
 
     }
     //definir une operation comme validé et encaisser
-    public Boolean setValidated(String operationId){
-        Operation operation=operationRepo.findByFormattedId(operationId);
-        if (operation != null){
+    public Operation setValidated(String operationId, String banque, String cheque) {
+        Operation operation = operationRepo.findByFormattedId(operationId);
+        if (operation != null) {
+            if (!"none".equals(banque) && !"none".equals(cheque)) {
+                operation.setBanque(banque);
+                operation.setCheque(cheque);
+            }
             operation.setValidated(true);
-            operationRepo.save(operation);
-            return true;
-        }else return false;
 
+            Operation savedOp = operationRepo.save(operation);
+
+            // --- LA SOLUTION ICI ---
+            // On vide manuellement les listes avant de renvoyer l'objet JSON
+            // Cela empêche Jackson de descendre dans les colis et de boucler.
+            savedOp.setParcel(new ArrayList<>());
+            savedOp.setPochette(new ArrayList<>());
+
+            return savedOp;
+        }
+        return null;
     }
+
     //ajouter un colis a l'opeartion en cours
     public Parcel addParcel(String operationId, Parcel parcel) {
         Operation operation = operationRepo.findByFormattedId(operationId);

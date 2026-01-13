@@ -26,6 +26,8 @@ public class Operation {
     private Boolean validated = false;
     private Boolean cancelled = false;
     private LocalDate createdAt;
+    private String banque;
+    private String cheque;
 
     /**
      * S'exécute AVANT l'insertion en base de données.
@@ -36,6 +38,22 @@ public class Operation {
         if (this.createdAt == null) {
             this.createdAt = LocalDate.now();
         }
+    }
+
+    public String getBanque() {
+        return banque;
+    }
+
+    public void setBanque(String banque) {
+        this.banque = banque;
+    }
+
+    public String getCheque() {
+        return cheque;
+    }
+
+    public void setCheque(String cheque) {
+        this.cheque = cheque;
     }
 
     /**
@@ -73,9 +91,11 @@ public class Operation {
         this.pochette = new ArrayList<>();
     }
 
-    public Operation(List<Parcel> parcel, List<Pochette> pochette) {
+    public Operation(List<Parcel> parcel, List<Pochette> pochette, String banque, String cheque) {
         this.parcel = parcel;
         this.pochette = pochette;
+        this.banque = banque;
+        this.cheque = cheque;
         this.createdAt = LocalDate.now();
     }
 
