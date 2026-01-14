@@ -1,5 +1,4 @@
 package tn.poste.myship.entity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import tn.poste.myship.sec.entity.AppUser;
@@ -18,6 +17,21 @@ public class Pochette {
     private final LocalDate createdAt=LocalDate.now();
     @Column(name = "operation")
     private String operationId; //
+
+    @Override
+    public String toString() {
+        return "Pochette{" +
+                "id=" + id +
+                ", typePochette='" + typePochette + '\'' +
+                ", quantite=" + quantite +
+                ", totalPrice=" + totalPrice +
+                ", deleted=" + deleted +
+                ", createdAt=" + createdAt +
+                ", operationId='" + operationId + '\'' +
+                ", sender=" + sender +
+                ", appUser=" + appUser +
+                '}';
+    }
 
     public Pochette() {
     }
@@ -88,12 +102,6 @@ public class Pochette {
     }
     public void setSender(Sender sender) {
         this.sender = sender;
-    }
-    public Double getPrixTotal() {
-        return totalPrice;
-    }
-    public void setPrixTotal(Double prixTotal) {
-        this.totalPrice = prixTotal;
     }
 
     public Boolean getDeleted() {

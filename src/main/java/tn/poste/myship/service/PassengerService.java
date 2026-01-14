@@ -9,6 +9,8 @@ import tn.poste.myship.repo.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,8 +83,21 @@ CheckClient checkClient;
     public Parcel addParcel(String operationId, Parcel parcel) {
         Operation operation = operationRepo.findByFormattedId(operationId);
         if (operation == null) throw new RuntimeException("Opération introuvable");
+        if(parcel.getTrackingNumber().getFormattedParcelId()!=null){
+Parcel updatedParcel=parcelService.getByTrackingNumebr(parcel.getTrackingNumber().getFormattedParcelId());
+if (updatedParcel !=null){
+    updatedParcel.setReceiver(checkClient.checkReceiver(parcel.getReceiver()));
+    updatedParcel.setSender(checkClient.checkSender(parcel.getSender()));
+    updatedParcel.setPrice(parcel.getPrice());
+    updatedParcel.setWeight(parcel.getWeight());
+    updatedParcel.setHeight(parcel.getHeight());
+    updatedParcel.setLenght(parcel.getLenght());
+    updatedParcel.setWidth(parcel.getWidth());
+    return parcelService.createOrUpdateParcel(updatedParcel);
 
-
+}
+        }
+        parcel.setTrackingNumber(trackingService.generateTrackingNumber());
         parcel.setSender(checkClient.checkSender(parcel.getSender()));
         parcel.setReceiver(checkClient.checkReceiver(parcel.getReceiver()));
 
@@ -97,14 +112,23 @@ CheckClient checkClient;
     }
     //ajouter une pochette à l'operation en cours
     public Pochette addPochete(String operationId, Pochette pochette){
+
         Operation operation=operationRepo.findByFormattedId(operationId);
         if(operation == null)throw new RuntimeException("Operation ontrouvable");
+        Pochette updatedPochett=pochetteService.pochetteRepo.findById(pochette.getId()).get();
+if(pochetteService.pochetteRepo.findById(pochette.getId()).isPresent()){
+    updatedPochett.setSender(checkClient.checkSender(pochette.getSender()));
+    updatedPochett.setTypePochette(pochette.getTypePochette());
+    updatedPochett.setQuantite(pochette.getQuantite());
+    updatedPochett.setTotalPrice(pochette.getTotalPrice());
+    return pochetteService.pochetteRepo.save(updatedPochett);
 
+}
         pochette.setSender(checkClient.checkSender(pochette.getSender()));
-        Pochette savedPochette=pochetteService.addPochete(operationId,pochette);
         //operation.getPochette().add(savedPochette);
-        return savedPochette;
+        return pochetteService.addPochete(operationId,pochette);
     }
+
     //consulter les details de operation
     public Operation getOperationContent(String formattedId) {
         Operation operation = operationRepo.findByFormattedId(formattedId);
@@ -129,20 +153,22 @@ CheckClient checkClient;
         return operation;
     }
 //Supprimer un colis de operation en cours
-    public void deleteParcelFromCurrentOpeartion(String tracking){
+    public Parcel deleteParcelFromCurrentOpeartion(String tracking){
 
-parcelService.deleteByTrackingNumber(tracking);
+return parcelService.deleteByTrackingNumber(tracking);
+
     }
     //Supprimer une pochette de operation en cours
-    public void deletePochetteFromCurrentOperation(String opId,String typePochette){
-       Operation operation=operationRepo.findByFormattedId(opId);
-       for (Pochette pochette :operation.getPochette()){
-           if (pochette.getTypePochette().equals(typePochette)){
-               pochette.setDeleted(true);
-               pochetteService.addPochete(opId,pochette);
-           }
-       }
+    public Pochette deletePochetteFromCurrentOperation(Pochette pochette){
 
+
+           Optional<Pochette> pochette1=pochetteService.pochetteRepo.findById(pochette.getId());
+           if (pochette1.isPresent()) {
+               pochette1.get().setDeleted(true);
+               return pochetteService.pochetteRepo.save(pochette1.get());
+           }else
+
+return null;
 
     }
     

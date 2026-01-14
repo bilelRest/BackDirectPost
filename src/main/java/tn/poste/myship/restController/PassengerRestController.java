@@ -44,10 +44,14 @@ public class PassengerRestController {
         // On ne renvoie qu'un String pour tester si le service plante ou si c'est le JSON
         return ResponseEntity.ok(operation);
     }
+    @PostMapping("/deleteparcel")
+    public Parcel deleteparcel(@RequestBody Parcel parcel){
+        return passengerService.deleteParcelFromCurrentOpeartion(parcel.getTrackingNumber().getFormattedParcelId());
+    }
     @PostMapping("/addparcel")
     public Parcel addParcel(@RequestBody Parcel parcel,@RequestParam(value = "op")String op){
 
-        parcel.setTrackingNumber(trackingService.generateTrackingNumber());
+
 
       Parcel saved=   passengerService.addParcel(op, parcel);
           passengerService.getOperationContent(op);
@@ -55,8 +59,12 @@ public class PassengerRestController {
 return saved;
 
     }
+    @PostMapping("deletepochette")
+    public Pochette deletePochett(@RequestBody Pochette pochette){
+        return passengerService.deletePochetteFromCurrentOperation(pochette);
+    }
     @PostMapping("/addpochette")
-    public Operation addParcel(@RequestBody Pochette pochette, @RequestParam(value = "op")String op){
+    public Operation addPochette(@RequestBody Pochette pochette, @RequestParam(value = "op")String op){
 
 
 

@@ -32,16 +32,17 @@ public class ParcelService {
         }
     }
     //Supprimer par le tracking number
-public void deleteByTrackingNumber(String tracking){
+public Parcel deleteByTrackingNumber(String tracking){
         try {
             Parcel parcel=parcelRepo.findByTrackingNumberString(tracking);
             if (parcel != null){
                 parcel.setDeleted(true);
+                return parcelRepo.save(parcel);
 
             }
         }catch (Exception e){
             throw new RuntimeException();
-        }
+        }return null;
 }
 //Selectionner les envois
     public Page<Parcel> getParcels(Pageable pageable ){
