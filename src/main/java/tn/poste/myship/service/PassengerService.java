@@ -111,22 +111,35 @@ if (updatedParcel !=null){
         return savedParcel; // On retourne l'objet qui contient toutes les relations
     }
     //ajouter une pochette à l'operation en cours
-    public Pochette addPochete(String operationId, Pochette pochette){
+    public Pochette addPochete(String operationId, Pochette pochette) {
+        // 1. Vérifier si l'opération existe
+        Operation operation = operationRepo.findByFormattedId(operationId);
+        if (operation == null) throw new RuntimeException("Operation introuvable");
 
-        Operation operation=operationRepo.findByFormattedId(operationId);
-        if(operation == null)throw new RuntimeException("Operation ontrouvable");
-        Pochette updatedPochett=pochetteService.pochetteRepo.findById(pochette.getId()).get();
-if(pochetteService.pochetteRepo.findById(pochette.getId()).isPresent()){
-    updatedPochett.setSender(checkClient.checkSender(pochette.getSender()));
-    updatedPochett.setTypePochette(pochette.getTypePochette());
-    updatedPochett.setQuantite(pochette.getQuantite());
-    updatedPochett.setTotalPrice(pochette.getTotalPrice());
-    return pochetteService.pochetteRepo.save(updatedPochett);
+        // 2. Vérifier si c'est une MISE À JOUR (ID présent) ou une CRÉATION (ID null)
+        if (pochette.getId() != null && pochette.getId() != 0) {
+            return pochetteService.pochetteRepo.findById(pochette.getId())
+                    .map(updatedPochett -> {
+                        updatedPochett.setSender(checkClient.checkSender(pochette.getSender()));
+                        updatedPochett.setTypePochette(pochette.getTypePochette());
+                        updatedPochett.setQuantite(pochette.getQuantite());
+                        updatedPochett.setTotalPrice(pochette.getTotalPrice());
+                        return pochetteService.pochetteRepo.save(updatedPochett);
+                    })
+                    .orElseGet(() -> {
+                        // Si l'ID était fourni mais n'existe plus en base, on crée une nouvelle
+                        return createNewPochette(operationId, pochette);
+                    });
+        } else {
+            // 3. Cas de la CRÉATION (ID est null)
+            return createNewPochette(operationId, pochette);
+        }
+    }
 
-}
+    // Petite méthode utilitaire pour la création
+    private Pochette createNewPochette(String operationId, Pochette pochette) {
         pochette.setSender(checkClient.checkSender(pochette.getSender()));
-        //operation.getPochette().add(savedPochette);
-        return pochetteService.addPochete(operationId,pochette);
+        return pochetteService.addPochete(operationId, pochette);
     }
 
     //consulter les details de operation
