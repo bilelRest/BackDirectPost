@@ -34,9 +34,14 @@ public class PassengerRestController {
     //}
     @PostMapping("/payment")
     public Operation validerPayment(@RequestParam(value = "op")String op,@RequestBody Payment payment){
+        System.out.println("debut de traitement ...");
 
-        return passengerService.setValidated(op,payment.banque, payment.cheque);
-
+        Operation operation= passengerService.setValidated(op,payment.banque, payment.cheque);
+        if (operation != null){
+            return operation;
+        }else {
+            return null;
+        }
     }
     @GetMapping("/parcels")
     public ResponseEntity<?> getParcelByOpId(@RequestParam(value = "op") String op) {

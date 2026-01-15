@@ -19,6 +19,7 @@ public class Parcel {
     private Double price;
     private Double weight;
     private Boolean deleted = false;
+    private Boolean normal=true;
 
     public Parcel() {
     }
@@ -48,9 +49,11 @@ public class Parcel {
 
 
 
-    public Parcel(AppUser appUser, Double width, Double height, Double lenght, Double price, Double weight, Receiver receiver, Sender sender, TrackingNumber trackingNumber, Boolean deleted, String operationId) {
+    public Parcel(Boolean normal,AppUser appUser, Double width, Double height, Double lenght, Double price, Double weight, Receiver receiver, Sender sender, TrackingNumber trackingNumber, Boolean deleted, String operationId) {
         this.deleted=deleted;
+        this.normal=normal;
         this.width = width;
+       // this.normal=normal;
         this.height = height;
         this.lenght = lenght;
         this.price = price;
@@ -158,5 +161,14 @@ public class Parcel {
 
     public void setOperationId(String operationId) {
         this.operationId = operationId;
+    }
+
+
+    public Boolean getNormal() {
+        return normal;
+    }
+
+    public void setNormal(Boolean normal) {
+        this.normal = normal;
     }
 }

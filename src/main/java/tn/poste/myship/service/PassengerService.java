@@ -73,7 +73,7 @@ CheckClient checkClient;
             // Cela empêche Jackson de descendre dans les colis et de boucler.
 //        savedOp.setParcel(operation.getParcel());
 //         savedOp.setPochette(operation.getPochette());
-
+System.out.println("Traitement terminé en voies des resulata");
             return operationRepo.save(operation);
         }
         return null;
