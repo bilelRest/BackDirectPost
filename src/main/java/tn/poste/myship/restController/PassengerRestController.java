@@ -54,6 +54,11 @@ public class PassengerRestController {
         // On ne renvoie qu'un String pour tester si le service plante ou si c'est le JSON
         return ResponseEntity.ok(operation);
     }
+    @GetMapping("/deleteop")
+    public ResponseEntity<?> deleteop(@RequestParam(value = "op")String op){
+         passengerService.setCancelled(op);
+         return ResponseEntity.ok().build();
+    }
     @PostMapping("/deleteparcel")
     public Parcel deleteparcel(@RequestBody Parcel parcel){
         return passengerService.deleteParcelFromCurrentOpeartion(parcel.getTrackingNumber().getFormattedParcelId());

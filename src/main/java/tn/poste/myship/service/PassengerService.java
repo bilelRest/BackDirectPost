@@ -42,13 +42,13 @@ CheckClient checkClient;
         return operation;
     }
     //definir une opeartion comme annulé aprés payment
-    public Boolean setCancelled(String operationId){
+    public Operation setCancelled(String operationId){
         Operation operation=operationRepo.findByFormattedId(operationId);
         if (operation != null){
             operation.setCancelled(true);
-            operationRepo.save(operation);
-            return true;
-        }else return false;
+
+            return operationRepo.save(operation);
+        }else return null;
 
     }
     //definir une operation comme brouillon avant la validation du monatant
