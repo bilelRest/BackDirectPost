@@ -32,6 +32,10 @@ public class PassengerRestController {
 //        System.out.println("Formatted Id recu au controleur "+op);
 //        return passengerService.getOperationContent(op);
     //}
+    @GetMapping("/operations")
+    public List<Operation> GetAllOperationByUser(){
+        return passengerService.getAllOps();
+    }
     @PostMapping("/payment")
     public Operation validerPayment(@RequestParam(value = "op")String op,@RequestBody Payment payment){
         System.out.println("debut de traitement ...");
@@ -46,6 +50,7 @@ public class PassengerRestController {
     @GetMapping("/parcels")
     public ResponseEntity<?> getParcelByOpId(@RequestParam(value = "op") String op) {
         Operation operation = passengerService.getOperationContent(op);
+
         // On ne renvoie qu'un String pour tester si le service plante ou si c'est le JSON
         return ResponseEntity.ok(operation);
     }

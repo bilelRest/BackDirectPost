@@ -27,8 +27,19 @@ public class Operation {
     private Boolean validated = false;
     private Boolean cancelled = false;
     private LocalDate createdAt;
+    private Boolean deleted;
     private String banque;
     private String cheque;
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
+    private Double total;
 
     /**
      * S'exécute AVANT l'insertion en base de données.
@@ -92,12 +103,14 @@ public class Operation {
         this.pochette = new ArrayList<>();
     }
 
-    public Operation(List<Parcel> parcel, List<Pochette> pochette, String banque, String cheque) {
+    public Operation(Boolean deleted,List<Parcel> parcel, List<Pochette> pochette, String banque, String cheque,Double total) {
         this.parcel = parcel;
+        this.deleted=deleted;
         this.pochette = pochette;
         this.banque = banque;
         this.cheque = cheque;
         this.createdAt = LocalDate.now();
+        this.total=total;
     }
 
     // --- GETTERS ET SETTERS ---
@@ -121,4 +134,12 @@ public class Operation {
 
     public LocalDate getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 }

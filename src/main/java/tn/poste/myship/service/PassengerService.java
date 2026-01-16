@@ -29,6 +29,10 @@ CheckClient checkClient;
     public Operation checkOps(Long id){
         return operationRepo.findById(id).isPresent()?operationRepo.findById(id).get():null;
     }
+    //Select tous les operation avec user / agence au future
+    public List<Operation> getAllOps(){
+        return operationRepo.findAll();
+    }
 //Creation d'une nouvelle operation
     public Operation NewOpeartion(){
         Operation operation=new Operation();
@@ -61,6 +65,17 @@ CheckClient checkClient;
     public Operation setValidated(String operationId, String banque, String cheque) {
         Operation operation = operationRepo.findByFormattedId(operationId);
         if (operation != null) {
+            Double total=0.0;
+            for (Pochette pochette:operation.getPochette()){
+                if (!pochette.getDeleted()){
+                total+=pochette.getTotalPrice();}
+            }
+            for (Parcel parcel:operation.getParcel()){
+                if (!parcel.getDeleted()){
+                total+=parcel.getPrice();}
+            }
+            operation.setTotal(total);
+            System.out.println("Total coté serveurs : "+total);
             if (!"none".equals(banque) && !"none".equals(cheque)) {
                 operation.setBanque(banque);
                 operation.setCheque(cheque);
@@ -93,6 +108,7 @@ if (updatedParcel !=null){
     updatedParcel.setHeight(parcel.getHeight());
     updatedParcel.setLenght(parcel.getLenght());
     updatedParcel.setWidth(parcel.getWidth());
+
     return parcelService.createOrUpdateParcel(updatedParcel);
 
 }
@@ -162,6 +178,14 @@ if (updatedParcel !=null){
         // 3. On affecte les listes "nettoyées" à l'objet de réponse
         operation.setParcel(activeParcels);
         operation.setPochette(activePochettes);
+        Double total=0.0;
+        for (Pochette pochette:operation.getPochette()){
+            total+=pochette.getTotalPrice();
+        }
+        for (Parcel parcel:operation.getParcel()){
+            total+=parcel.getPrice();
+        }
+        operation.setTotal(total);
 
         return operation;
     }
