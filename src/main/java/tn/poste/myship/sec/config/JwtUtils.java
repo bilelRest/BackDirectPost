@@ -10,14 +10,24 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    private String secretKey = "votre_cle_tres_secrete_et_tres_longue_pour_la_securite";
-    private long jwtExpiration = 3000000; // 24h
-
+    private final String secretKey = "votre_cle_tres_secrete_et_tres_longue_pour_la_securite";
+    private final long jwtExpiration = 600000; // 24h
+private final long refreshExpiration=28800000;
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .claim("role",userDetails.getAuthorities().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
+    }
+    public String generateRefreshToken(UserDetails userDetails) {
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .claim("role",userDetails.getAuthorities().toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + refreshExpiration))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }

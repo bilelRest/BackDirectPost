@@ -2,13 +2,18 @@ package tn.poste.myship.restController;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import tn.poste.myship.controller.OperationController;
 import tn.poste.myship.dto.DtoParcel;
 import tn.poste.myship.dto.Payment;
 import tn.poste.myship.entity.*;
+import tn.poste.myship.sec.config.JwtUtils;
+import tn.poste.myship.sec.entity.AppUser;
 import tn.poste.myship.service.PassengerService;
 import tn.poste.myship.service.SenderReceiverService;
 import tn.poste.myship.service.TrackingService;
@@ -26,6 +31,8 @@ public class PassengerRestController {
     SenderReceiverService senderReceiverService;
     @Autowired
     TrackingService trackingService;
+    @Autowired
+    JwtUtils jwtUtils;
 
 //    @GetMapping("/parcels")
 //    public Operation getParcelByOpId(@RequestParam (value = "op") String op){
@@ -34,10 +41,11 @@ public class PassengerRestController {
     //}
     @GetMapping("/operations")
     public List<Operation> GetAllOperationByUser(){
+
         return passengerService.getAllOps();
     }
     @PostMapping("/payment")
-    public Operation validerPayment(@RequestParam(value = "op")String op,@RequestBody Payment payment){
+    public Operation validerPayment(@RequestParam(value = "op")String op, @RequestBody Payment payment){
         System.out.println("debut de traitement ...");
 
         Operation operation= passengerService.setValidated(op,payment.banque, payment.cheque);
@@ -91,10 +99,15 @@ return saved;
     }
     @GetMapping("/new")
     public Operation newOperation(@RequestParam(value = "op", defaultValue = "new") String op) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Auth object: " + auth);
+        if (auth != null) {
+            System.out.println("Principal type: " + auth.getPrincipal().getClass().getName());
+        }
         System.out.println("Operation recu "+op);
         // Si op est "new" ou vide/null, on crée une nouvelle opération
         if (!StringUtils.hasText(op) || "new".equalsIgnoreCase(op)) {
-            return passengerService.NewOpeartion();
+            return passengerService.NewOperation();
         }
 
         // Sinon, on récupère le contenu de l'opération existante

@@ -35,8 +35,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Utilisez des patterns précis sans ** au milieu ou à la fin si non nécessaire
-                        .requestMatchers("/auth/login", "/auth/new").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/new").permitAll()
+                        .requestMatchers("/auth/login", "/auth/new","/auth/refresh").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/new","/api/auth/refresh").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -59,7 +59,7 @@ public class WebSecurityConfig {
 
         // Autorise Angular
         config.setAllowedOrigins(Arrays.asList("https://directpost.apirest.pro"));
-       // config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        //config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
 
 
         // Autorise les méthodes HTTP

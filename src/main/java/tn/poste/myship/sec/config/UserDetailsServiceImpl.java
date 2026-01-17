@@ -25,11 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         AppUser appUser = userRepository.findByUsername(username);
         if (appUser == null) throw new UsernameNotFoundException("Utilisateur non trouvé");
 
-        // Conversion de vos AppRole en GrantedAuthority
-        List<SimpleGrantedAuthority> authorities = appUser.getAppRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
-                .collect(Collectors.toList());
-
-        return new User(appUser.getUsername(), appUser.getPassword(), authorities);
+        // On retourne l'entité elle-même !
+        return appUser;
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import tn.poste.myship.sec.entity.AppUser;
 
 @Entity
 public class Operation {
@@ -16,13 +17,23 @@ public class Operation {
     private Long opId;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "operation", referencedColumnName = "formattedId")
-    private List<Parcel> parcel = new ArrayList<>();
+    private List<Parcel> parcel;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "operation", referencedColumnName = "formattedId")
-    private List<Pochette> pochette = new ArrayList<>();
+    private List<Pochette> pochette;
 
+    public AppUser getAppUser() {
+        return appUser;
+    }
 
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
+    }
+
+    @ManyToOne // Changé de @OneToOne à @ManyToOne
+    @JoinColumn(name = "app_user_user_id", nullable = false)
+    private AppUser appUser;
     private String formattedId;
     private Boolean validated = false;
     private Boolean cancelled = false;
@@ -103,10 +114,11 @@ public class Operation {
         this.pochette = new ArrayList<>();
     }
 
-    public Operation(Boolean deleted,List<Parcel> parcel, List<Pochette> pochette, String banque, String cheque,Double total) {
+    public Operation(Boolean deleted, List<Parcel> parcel, List<Pochette> pochette, AppUser appUser, String banque, String cheque, Double total) {
         this.parcel = parcel;
         this.deleted=deleted;
         this.pochette = pochette;
+        this.appUser = appUser;
         this.banque = banque;
         this.cheque = cheque;
         this.createdAt = LocalDate.now();

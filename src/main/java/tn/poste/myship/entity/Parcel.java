@@ -24,9 +24,7 @@ public class Parcel {
     public Parcel() {
     }
 
-    @OneToOne
-    @JsonIgnoreProperties({"password", "roles"}) // ← Ignorer les infos sensibles
-    private AppUser appUser;
+
     @Column(name = "operation")
     private String operationId; //
 
@@ -49,7 +47,7 @@ public class Parcel {
 
 
 
-    public Parcel(Boolean normal,AppUser appUser, Double width, Double height, Double lenght, Double price, Double weight, Receiver receiver, Sender sender, TrackingNumber trackingNumber, Boolean deleted, String operationId) {
+    public Parcel(Boolean normal, Double width, Double height, Double lenght, Double price, Double weight, Receiver receiver, Sender sender, TrackingNumber trackingNumber, Boolean deleted, String operationId) {
         this.deleted=deleted;
         this.normal=normal;
         this.width = width;
@@ -61,7 +59,6 @@ public class Parcel {
         this.receiver = receiver;
         this.sender = sender;
         this.trackingNumber = trackingNumber;
-        this.appUser = appUser;
         this.operationId = operationId;
     }
 
@@ -137,13 +134,7 @@ public class Parcel {
         this.deleted = deleted;
     }
 
-    public AppUser getAppUser() {
-        return appUser;
-    }
 
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
-    }
 
 
 

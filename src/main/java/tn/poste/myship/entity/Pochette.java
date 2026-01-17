@@ -29,7 +29,7 @@ public class Pochette {
                 ", createdAt=" + createdAt +
                 ", operationId='" + operationId + '\'' +
                 ", sender=" + sender +
-                ", appUser=" + appUser +
+
                 '}';
     }
 
@@ -39,32 +39,24 @@ public class Pochette {
     @ManyToOne
     private Sender sender;
 
-    @OneToOne
-    @JsonIgnoreProperties({"password", "roles"}) // ← Ignorer les infos sensibles
-    private AppUser appUser;
+
     public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public AppUser getAppUser() {
-        return appUser;
-    }
 
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
-    }
 
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 
-    public Pochette(String typePochette, int quantite, String operationId, Sender sender, Double totalPrice , AppUser appUser) {
+    public Pochette(String typePochette, int quantite, String operationId, Sender sender, Double totalPrice  ) {
         this.typePochette = typePochette;
         this.quantite = quantite;
         this.operationId = operationId;
         this.sender = sender;
         this.totalPrice = totalPrice;
-      this.appUser = appUser;
+
     }
 
     public Pochette(String operationId) {

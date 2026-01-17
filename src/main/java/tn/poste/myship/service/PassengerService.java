@@ -1,11 +1,17 @@
 package tn.poste.myship.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import tn.poste.myship.entity.Operation;
 import tn.poste.myship.entity.Parcel;
 import tn.poste.myship.entity.Pochette;
 import tn.poste.myship.repo.*;
+import tn.poste.myship.sec.config.JwtUtils;
+import tn.poste.myship.sec.entity.AppUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +31,38 @@ ParcelService parcelService;
 PochetteService pochetteService;
 @Autowired
 CheckClient checkClient;
+@Autowired
+    JwtUtils jwtUtils;
+@Autowired
+    UserDetailsService userDetailsService;
 //Verification si operation deja existante pour eviter le declenchement des ops eu cours de rafraichissement
     public Operation checkOps(Long id){
         return operationRepo.findById(id).isPresent()?operationRepo.findById(id).get():null;
     }
     //Select tous les operation avec user / agence au future
     public List<Operation> getAllOps(){
-        return operationRepo.findAll();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser appUser=(AppUser) authentication.getPrincipal();
+        return operationRepo.findByAppUser(appUser);
     }
 //Creation d'une nouvelle operation
-    public Operation NewOpeartion(){
-        Operation operation=new Operation();
-        operation.setParcel(new ArrayList<>());
-        operation.setPochette(new ArrayList<>());
-        operationRepo.save(operation);
-        return operation;
+public Operation NewOperation() {
+    Operation operation = new Operation();
+    operation.setParcel(new ArrayList<>());
+    operation.setPochette(new ArrayList<>());
+
+    // 1. Récupérer l'utilisateur actuellement connecté via le contexte de sécurité
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    // 2. Extraire l'objet AppUser (Cast sécurisé)
+    if (authentication != null && authentication.getPrincipal() instanceof AppUser appUser) {
+        operation.setAppUser(appUser);
+    } else {
+        throw new IllegalStateException("Utilisateur non authentifié");
     }
+
+    return operationRepo.save(operation);
+}
     //definir une opeartion comme annulé aprés payment
     public Operation setCancelled(String operationId){
         Operation operation=operationRepo.findByFormattedId(operationId);
@@ -160,7 +182,9 @@ if (updatedParcel !=null){
 
     //consulter les details de operation
     public Operation getOperationContent(String formattedId) {
-        Operation operation = operationRepo.findByFormattedId(formattedId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+AppUser appUser=(AppUser) authentication.getPrincipal();
+        Operation operation = operationRepo.findByFormattedIdAndAppUser(formattedId,appUser);
 
         // 1. On filtre les listes (ton code actuel)
         List<Parcel> activeParcels = operation.getParcel().stream()
