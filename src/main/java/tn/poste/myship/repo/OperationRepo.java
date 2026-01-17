@@ -16,6 +16,10 @@ public interface OperationRepo extends JpaRepository<Operation, Long>{
     Operation findByFormattedIdAndAppUser(String formattedId, AppUser appUser);
 
     List<Operation> findByAppUser(AppUser appUser);
+
+  //  List<Operation> findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalse();
+
+    List<Operation> findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalseAndClosedFalse(AppUser appUser);
 //@Query("DELETE FROM Operation o WHERE o.parcel.trackingNumber.formattedParcelId = :track")
 //    void deleteParcelFromCurrentOperation(String track);
 }

@@ -2,6 +2,7 @@ package tn.poste.myship.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -232,6 +233,27 @@ return parcelService.deleteByTrackingNumber(tracking);
 return null;
 
     }
-    
 
+
+    public List<Operation> closeSituationAgent() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser appUser=(AppUser) authentication.getPrincipal();
+        List<Operation> operations=operationRepo.findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalseAndClosedFalse(appUser);
+    if (!operations.isEmpty()){
+        for (Operation op:operations){
+            op.setClosed(true);
+        }
+        System.out.println(operations);
+      return   operationRepo.saveAll(operations);
+    }else {
+        return null;
+    }
+    }
+
+    public List<Operation> getNonClosedOperationContentByAgent() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser appUser=(AppUser) authentication.getPrincipal();
+        return operationRepo.findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalseAndClosedFalse(appUser);
+
+    }
 }

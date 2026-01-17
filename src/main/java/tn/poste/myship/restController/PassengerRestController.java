@@ -44,6 +44,17 @@ public class PassengerRestController {
 
         return passengerService.getAllOps();
     }
+    @GetMapping("/opsnotclosed")
+    public List<Operation> opsNotClosed(){
+        return passengerService.getNonClosedOperationContentByAgent();
+    }
+    @GetMapping("/situation")
+    public ResponseEntity<?> validerSituationAgent(){
+        List<Operation> operations=passengerService.closeSituationAgent();
+        if (operations != null ){
+            return ResponseEntity.ok().build();
+        }else return ResponseEntity.notFound().build();
+    }
     @PostMapping("/payment")
     public Operation validerPayment(@RequestParam(value = "op")String op, @RequestBody Payment payment){
         System.out.println("debut de traitement ...");

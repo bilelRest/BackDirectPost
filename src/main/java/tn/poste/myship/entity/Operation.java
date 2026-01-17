@@ -38,9 +38,10 @@ public class Operation {
     private Boolean validated = false;
     private Boolean cancelled = false;
     private LocalDate createdAt;
-    private Boolean deleted;
+    private Boolean deleted=false;
     private String banque;
     private String cheque;
+    private Boolean closed=false;
 
     public Double getTotal() {
         return total;
@@ -79,6 +80,14 @@ public class Operation {
         this.cheque = cheque;
     }
 
+    public Boolean getClosed() {
+        return closed;
+    }
+
+    public void setClosed(Boolean closed) {
+        this.closed = closed;
+    }
+
     /**
      * S'exécute APRES l'insertion. L'ID (opId) est maintenant disponible.
      */
@@ -114,13 +123,14 @@ public class Operation {
         this.pochette = new ArrayList<>();
     }
 
-    public Operation(Boolean deleted, List<Parcel> parcel, List<Pochette> pochette, AppUser appUser, String banque, String cheque, Double total) {
+    public Operation(Boolean deleted, List<Parcel> parcel, List<Pochette> pochette, AppUser appUser, String banque, String cheque, Boolean closed, Double total) {
         this.parcel = parcel;
         this.deleted=deleted;
         this.pochette = pochette;
         this.appUser = appUser;
         this.banque = banque;
         this.cheque = cheque;
+        this.closed = closed;
         this.createdAt = LocalDate.now();
         this.total=total;
     }
