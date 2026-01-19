@@ -22,13 +22,42 @@ public class Operation {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "operation", referencedColumnName = "formattedId")
     private List<Pochette> pochette;
-
+@Column(name = "situation")
+private Long situationId;
     public AppUser getAppUser() {
         return appUser;
     }
 
+    public Long getSituationId() {
+        return situationId;
+    }
+
+    public void setSituationId(Long situationId) {
+        this.situationId = situationId;
+    }
+
     public void setAppUser(AppUser appUser) {
         this.appUser = appUser;
+    }
+
+    @Override
+    public String toString() {
+        return "Operation{" +
+                "opId=" + opId +
+                ", parcel=" + parcel +
+                ", pochette=" + pochette +
+                ", situationId=" + situationId +
+                ", appUser=" + appUser +
+                ", formattedId='" + formattedId + '\'' +
+                ", validated=" + validated +
+                ", cancelled=" + cancelled +
+                ", createdAt=" + createdAt +
+                ", deleted=" + deleted +
+                ", banque='" + banque + '\'' +
+                ", cheque='" + cheque + '\'' +
+                ", closed=" + closed +
+                ", total=" + total +
+                '}';
     }
 
     @ManyToOne // Changé de @OneToOne à @ManyToOne
@@ -123,7 +152,7 @@ public class Operation {
         this.pochette = new ArrayList<>();
     }
 
-    public Operation(Boolean deleted, List<Parcel> parcel, List<Pochette> pochette, AppUser appUser, String banque, String cheque, Boolean closed, Double total) {
+    public Operation(Long situationId,Boolean deleted, List<Parcel> parcel, List<Pochette> pochette, AppUser appUser, String banque, String cheque, Boolean closed, Double total) {
         this.parcel = parcel;
         this.deleted=deleted;
         this.pochette = pochette;
@@ -133,6 +162,7 @@ public class Operation {
         this.closed = closed;
         this.createdAt = LocalDate.now();
         this.total=total;
+        this.situationId=situationId;
     }
 
     // --- GETTERS ET SETTERS ---

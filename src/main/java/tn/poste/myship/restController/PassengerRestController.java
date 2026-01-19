@@ -48,6 +48,16 @@ public class PassengerRestController {
     public List<Operation> opsNotClosed(){
         return passengerService.getNonClosedOperationContentByAgent();
     }
+    @GetMapping("/situation-list")
+    public List<Situation> situationList(){
+        List<Situation> situationList=passengerService.getSituation();
+        for (Situation st :situationList){
+            for (Operation op : st.getOperations()){
+                System.out.println(op.toString());
+            }
+        }
+        return passengerService.getSituation();
+    }
     @GetMapping("/situation")
     public ResponseEntity<?> validerSituationAgent(){
         List<Operation> operations=passengerService.closeSituationAgent();

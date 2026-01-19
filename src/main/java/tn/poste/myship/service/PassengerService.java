@@ -1,5 +1,6 @@
 package tn.poste.myship.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import tn.poste.myship.entity.Operation;
 import tn.poste.myship.entity.Parcel;
 import tn.poste.myship.entity.Pochette;
+import tn.poste.myship.entity.Situation;
 import tn.poste.myship.repo.*;
 import tn.poste.myship.sec.config.JwtUtils;
 import tn.poste.myship.sec.entity.AppUser;
@@ -26,6 +28,8 @@ public class PassengerService {
     OperationRepo operationRepo;
 @Autowired
 TrackingService trackingService;
+@Autowired
+private SituationRepo situationRepo;
 @Autowired
 ParcelService parcelService;
 @Autowired
@@ -57,7 +61,7 @@ public Operation NewOperation() {
 
     // 2. Extraire l'objet AppUser (Cast sécurisé)
     if (authentication != null && authentication.getPrincipal() instanceof AppUser appUser) {
-        operation.setAppUser(appUser);
+        operation.setAppUser((AppUser) authentication.getPrincipal());
     } else {
         throw new IllegalStateException("Utilisateur non authentifié");
     }
@@ -234,26 +238,56 @@ return null;
 
     }
 
-
+    @Transactional // Essential for data consistency
     public List<Operation> closeSituationAgent() {
+        // 1. Get current Agent
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AppUser appUser=(AppUser) authentication.getPrincipal();
-        List<Operation> operations=operationRepo.findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalseAndClosedFalse(appUser);
-    if (!operations.isEmpty()){
-        for (Operation op:operations){
-            op.setClosed(true);
-        }
-        System.out.println(operations);
-      return   operationRepo.saveAll(operations);
-    }else {
-        return null;
-    }
-    }
+        AppUser appUser = (AppUser) authentication.getPrincipal();
 
+        // 2. Fetch pending operations
+        List<Operation> operations = operationRepo.findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalseAndClosedFalse(appUser);
+
+        if (operations.isEmpty()) {
+            return null;
+        }
+
+        // 3. Initialize the Situation object
+        Situation situation = new Situation();
+        situation.setAppUser(appUser);
+
+        // 4. Calculate total and update operations in one loop
+        Double totalAmount = 0.0;
+        for (Operation op : operations) {
+            op.setClosed(true);
+            totalAmount += (op.getTotal() != null) ? op.getTotal() : 0.0;
+        }
+
+        situation.setTotal(totalAmount);
+        situation.setOperations(operations);
+
+        // 5. Save the Situation.
+        // Because of CascadeType.ALL or the relationship,
+        // saving the situation can update the operations.
+        Situation savedSituation = situationRepo.save(situation);
+
+        // 6. Update operations with the new Situation ID (if using the manual ID field)
+        for (Operation op : operations) {
+            op.setSituationId(savedSituation.getId());
+        }
+
+        return operationRepo.saveAll(operations);
+    }
     public List<Operation> getNonClosedOperationContentByAgent() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AppUser appUser=(AppUser) authentication.getPrincipal();
         return operationRepo.findByAppUserAndValidatedTrueAndCancelledFalseAndDeletedFalseAndClosedFalse(appUser);
+
+    }
+
+    public List<Situation>  getSituation() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUser appUser=(AppUser) authentication.getPrincipal();
+        return situationRepo.findByAppUser(appUser);
 
     }
 }

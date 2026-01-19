@@ -29,6 +29,7 @@ public class MyshipApplication {
 //	roleRepository.save(new AppRole("CHEF"));
 //	roleRepository.save(new AppRole("GUICHET"));
 //appUserService.addRoleToUser("guichet","GUICHET");
+//appUserService.addRoleToUser("CHEF","bilel");
 
 };}
 }
