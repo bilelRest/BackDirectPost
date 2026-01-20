@@ -19,56 +19,34 @@ public class CherService {
     @Autowired
     SituationRepo situationRepo;
     public List<Situation> chefSituation(){
-        System.out.println("Entree dans la methode ");
-        AppUser appUser=extractUser();
-        boolean isChef=false;
-        if (appUser !=null && !appUser.getAppRoles().isEmpty()){
-            System.out.println("appuser non null ");
+        AppUser appUser = extractUser();
 
-            for (AppRole appRole: appUser.getAppRoles()){
-                if (!appRole.getRoleName().equals("CHEF")) {
-                    isChef = true;
-                    break;
-                }
-            }
-            if (isChef){
-                return situationRepo.findByAgenceAndDateAndCloturedFalse(appUser.getAgence(), LocalDate.now());
-            }
+        // Vérifier si l'utilisateur possède le rôle CHEF
+        boolean isChef = appUser.getAppRoles().stream()
+                .anyMatch(role -> role.getRoleName().equals("CHEF"));
+
+        if (isChef) {
+            List<Situation> results = situationRepo.findByAgenceAndDateAndCloturedFalse(appUser.getAgence(), LocalDate.now());
+            // ✅ NE JAMAIS retourner null, retourner une liste vide []
+            return (results != null) ? results : new java.util.ArrayList<>();
         }
-        System.out.println("appuser  null ");
 
-            return null;
-
+        return new java.util.ArrayList<>();
     }
     public List<Situation> chefClotured(){
-        System.out.println("Entree dans la methode set validated");
-        AppUser appUser=extractUser();
-        boolean isChef=false;
-        if (appUser !=null && !appUser.getAppRoles().isEmpty()){
-            System.out.println("appuser non null ");
+        AppUser appUser = extractUser();
+        boolean isChef = appUser.getAppRoles().stream()
+                .anyMatch(role -> role.getRoleName().equals("CHEF"));
 
-            for (AppRole appRole: appUser.getAppRoles()){
-                if (!appRole.getRoleName().equals("CHEF")) {
-                    isChef = true;
-                    break;
-                }
+        if (isChef) {
+            List<Situation> situationList = situationRepo.findByAgenceAndDateAndCloturedFalse(appUser.getAgence(), LocalDate.now());
+            for(Situation situation : situationList){
+                situation.setClotured(true);
+                situationRepo.save(situation);
             }
-            if (isChef){
-                List<Situation> situationList= situationRepo.findByAgenceAndDateAndCloturedFalse(appUser.getAgence(), LocalDate.now());
-          if (!situationList.isEmpty()){
-              for(Situation situation:situationList){
-                  situation.setClotured(true);
-              situationRepo.save(situation);
-              }
-              return situationList;
-
-          }
-            }
+            return situationList;
         }
-        System.out.println("appuser  null ");
-
-        return null;
-
+        return new java.util.ArrayList<>();
     }
     public AppUser extractUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
