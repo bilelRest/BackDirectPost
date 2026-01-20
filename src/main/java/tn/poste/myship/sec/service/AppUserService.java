@@ -1,6 +1,8 @@
 package tn.poste.myship.sec.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.poste.myship.sec.entity.AppRole;
 import tn.poste.myship.sec.entity.AppUser;
@@ -10,17 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-
+@Transactional
 public class AppUserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
     AppRoleService roleService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
     public AppUser addUser(AppUser user){
         AppUser appUser=userRepository.findByUsername(user.getUsername());
         if (appUser != null){
             return null;
         }else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(user);
         }
     }
@@ -43,5 +48,15 @@ public class AppUserService {
             appUser1.getAppRoles().remove(role1);
             return userRepository.save(appUser1);
         }
+    }
+
+    public Boolean removeUser(AppUser appUser) {
+        AppUser appUser1=userRepository.findByUsername(appUser.getUsername());
+        if (appUser1 != null){
+            appUser1.setAppRoles(null);
+            userRepository.save(appUser1);
+            userRepository.delete(appUser1);
+            return true;
+        }return false;
     }
 }

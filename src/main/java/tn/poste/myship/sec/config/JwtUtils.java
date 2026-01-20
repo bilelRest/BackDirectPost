@@ -5,27 +5,41 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.GrantedAuthority;
+import tn.poste.myship.sec.entity.AppUser;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
     private final String secretKey = "votre_cle_tres_secrete_et_tres_longue_pour_la_securite";
     private final long jwtExpiration = 600000; // 24h
 private final long refreshExpiration=28800000;
+
     public String generateToken(UserDetails userDetails) {
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        AppUser user = (AppUser) userDetails;
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("role",userDetails.getAuthorities().toString())
+                .claim("role",roles)
+                .claim("nomPrenom", user.getNomPrenom()) // Nouveau
+                .claim("agence", user.getAgence())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
     public String generateRefreshToken(UserDetails userDetails) {
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("role",userDetails.getAuthorities().toString())
+                .claim("role",roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + refreshExpiration))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)

@@ -53,7 +53,7 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+   // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
     public String addUser(@RequestBody LoginRequest loginRequest){
          try {
@@ -68,7 +68,7 @@ public class AuthController {
              return null;
          }
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')") // Ensure only admins can call this    @PostMapping("/addrole")
+    @PreAuthorize("hasRole('ADMIN')") // Ensure only admins can call this    @PostMapping("/addrole")
     public ResponseEntity<?> addrole(@RequestBody UserRole userRole) {
         try {
             userService.addRoleToUser(userRole.getUsername(), userRole.getRole());

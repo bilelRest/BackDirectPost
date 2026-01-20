@@ -254,6 +254,7 @@ return null;
         // 3. Initialize the Situation object
         Situation situation = new Situation();
         situation.setAppUser(appUser);
+        situation.setAgence(appUser.getAgence());
 
         // 4. Calculate total and update operations in one loop
         Double totalAmount = 0.0;

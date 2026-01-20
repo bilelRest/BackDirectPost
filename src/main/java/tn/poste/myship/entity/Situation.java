@@ -20,6 +20,7 @@ private List<Operation> operations=new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "user_id") // This creates the foreign key in the 'situation' table
     private AppUser appUser;
+    private String agence;
 private Double total;
 private final LocalDate date=LocalDate.now();
 
@@ -34,14 +35,21 @@ private final LocalDate date=LocalDate.now();
         this.total = total;
     }
 
-    public Situation(Long id, AppUser appUser , List<Operation> list, Double total) {
+    public Situation(Long id, AppUser appUser , List<Operation> list, String agence, Double total) {
         this.id = id;
         this.operations=list;
         this.appUser = appUser;
+        this.agence = agence;
         this.total = total;
     }
 
+    public String getAgence() {
+        return agence;
+    }
 
+    public void setAgence(String agence) {
+        this.agence = agence;
+    }
 
     public Long getId() {
         return id;
