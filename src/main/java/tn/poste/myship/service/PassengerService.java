@@ -190,16 +190,18 @@ if (updatedParcel !=null){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 AppUser appUser=(AppUser) authentication.getPrincipal();
         Operation operation = operationRepo.findByFormattedIdAndAppUser(formattedId,appUser);
-
-        // 1. On filtre les listes (ton code actuel)
-        List<Parcel> activeParcels = operation.getParcel().stream()
-                .filter(p -> !p.getDeleted())
-                .collect(Collectors.toList());
-
-        List<Pochette> activePochettes = operation.getPochette().stream()
-                .filter(p -> !p.getDeleted())
-                .collect(Collectors.toList());
-
+        List<Parcel> activeParcels=new ArrayList<>();
+        List<Pochette> activePochettes=new ArrayList<>();
+if (operation.getParcel()!=null) {
+    // 1. On filtre les listes (ton code actuel)
+     activeParcels = operation.getParcel().stream()
+            .filter(p -> !p.getDeleted())
+            .collect(Collectors.toList());
+}if (operation.getPochette() != null) {
+            activePochettes = operation.getPochette().stream()
+                    .filter(p -> !p.getDeleted())
+                    .collect(Collectors.toList());
+        }
         // 2. LA SOLUTION : On coupe le lien retour vers l'opération
         // Cela empêche Jackson de boucler, mais ne change rien en base de données
 
