@@ -21,4 +21,8 @@ public class ChefRestController {
     System.out.println("Extracted user "+cherService.extractUser().getAppRoles());
     return cherService.chefSituation();
 }
+@GetMapping("setclotured")
+    public List<Situation> setClotured(){
+    return cherService.chefClotured();
+}
 }

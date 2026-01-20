@@ -20,6 +20,7 @@ public class MyshipApplication {
 	RoleRepository roleRepository;
 @Autowired
 	AppUserService appUserService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(MyshipApplication.class, args);
 	}
@@ -29,7 +30,8 @@ public class MyshipApplication {
 //	roleRepository.save(new AppRole("CHEF"));
 //	roleRepository.save(new AppRole("GUICHET"));
 //appUserService.addRoleToUser("guichet","GUICHET");
-//appUserService.addRoleToUser("CHEF","bilel");
 
+//appUserService.addRoleToUser("bilel","ADMIN");
+//
 };}
 }

@@ -21,6 +21,7 @@ private List<Operation> operations=new ArrayList<>();
     @JoinColumn(name = "user_id") // This creates the foreign key in the 'situation' table
     private AppUser appUser;
     private String agence;
+    private Boolean clotured=false;
 private Double total;
 private final LocalDate date=LocalDate.now();
 
@@ -35,8 +36,9 @@ private final LocalDate date=LocalDate.now();
         this.total = total;
     }
 
-    public Situation(Long id, AppUser appUser , List<Operation> list, String agence, Double total) {
+    public Situation(Boolean clotured,Long id, AppUser appUser , List<Operation> list, String agence, Double total) {
         this.id = id;
+        this.clotured=clotured;
         this.operations=list;
         this.appUser = appUser;
         this.agence = agence;
@@ -78,5 +80,13 @@ private final LocalDate date=LocalDate.now();
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public Boolean getClotured() {
+        return clotured;
+    }
+
+    public void setClotured(Boolean clotured) {
+        this.clotured = clotured;
     }
 }

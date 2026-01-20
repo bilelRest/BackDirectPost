@@ -32,12 +32,42 @@ public class CherService {
                 }
             }
             if (isChef){
-                return situationRepo.findByAgenceAndDate(appUser.getAgence(), LocalDate.now());
+                return situationRepo.findByAgenceAndDateAndCloturedFalse(appUser.getAgence(), LocalDate.now());
             }
         }
         System.out.println("appuser  null ");
 
             return null;
+
+    }
+    public List<Situation> chefClotured(){
+        System.out.println("Entree dans la methode set validated");
+        AppUser appUser=extractUser();
+        boolean isChef=false;
+        if (appUser !=null && !appUser.getAppRoles().isEmpty()){
+            System.out.println("appuser non null ");
+
+            for (AppRole appRole: appUser.getAppRoles()){
+                if (!appRole.getRoleName().equals("CHEF")) {
+                    isChef = true;
+                    break;
+                }
+            }
+            if (isChef){
+                List<Situation> situationList= situationRepo.findByAgenceAndDateAndCloturedFalse(appUser.getAgence(), LocalDate.now());
+          if (!situationList.isEmpty()){
+              for(Situation situation:situationList){
+                  situation.setClotured(true);
+              situationRepo.save(situation);
+              }
+              return situationList;
+
+          }
+            }
+        }
+        System.out.println("appuser  null ");
+
+        return null;
 
     }
     public AppUser extractUser(){

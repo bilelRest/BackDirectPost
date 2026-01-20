@@ -11,4 +11,6 @@ public interface SituationRepo extends JpaRepository<Situation,Long> {
    List< Situation> findByAppUser(AppUser appUser);
 
     List<Situation> findByAgenceAndDate(String agence, LocalDate now);
+
+    List<Situation> findByAgenceAndDateAndCloturedFalse(String agence, LocalDate now);
 }
