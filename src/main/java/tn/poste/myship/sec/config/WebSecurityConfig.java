@@ -60,7 +60,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Autorise Angular
-        config.setAllowedOrigins(Arrays.asList("https://directpost.apirest.pro"));
+        config.setAllowedOrigins(Arrays.asList("https://directpost.apirest.pro","http://localhost:4200"));
       //  config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
 
 
